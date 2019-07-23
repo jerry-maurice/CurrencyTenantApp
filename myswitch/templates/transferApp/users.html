@@ -1,0 +1,100 @@
+<!--transfer/dashboard/-->
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Users{% endblock %}
+{% block content %}
+	<!-- navbar --> 
+	<div class="templatemo-top-menu">
+		<div class="container">
+			<!-- Static navbar -->
+			<nav class="navbar navbar-expand-lg navbar" role="navigation">
+				<div class="container">
+					<a href="{% url 'dashboard' %}" class="navbar-brand"><img src="{% static 'transferApp/images/official_switch.png' %}" alt="switch logo" title="switch" height="80" /></a>
+					<div class="collapse navbar-collapse nav justify-content-end" id="navbarNav">
+						<ul class="navbar-nav" style="margin-top: 40px;">
+						  <li class="nav-item ">
+							<a class="nav-link" href="{% url 'dashboard' %}">Home <span class="sr-only">(current)</span></a>
+						  </li>
+						  <li class="nav-item">
+							<a class="nav-link" href="{% url 'transfer' %}">Transaction</a>
+						  </li>
+						  <li class="nav-item">
+							<a class="nav-link" href="{% url 'support' %}">Support</a>
+						  </li>
+						  <li class="nav-item dropdown active">
+							<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="false">{{user.first_name}}</a>
+							  <div class="dropdown-menu">
+							  	<a class="dropdown-item" href="{% url 'profile' %}">Account</a>
+								{% if user.is_superuser %}
+								 <a class="dropdown-item" href="{% url 'signup' %}">Create User</a>
+								 <a class="dropdown-item" href="{% url 'userInfo' %}">View all Users</a>
+								 <a class="dropdown-item" href="{% url 'transactions' %}">View all Transactions</a>
+								 <a class="dropdown-item" href="{% url 'rateManagement' %}">Rates</a>
+								 {% endif %}
+							  	<a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+							  </div>
+						  </li>
+						</ul>
+					</div><!--/.nav-collapse -->
+				
+				</div>
+			</nav>
+		</div> <!-- /container -->
+	</div>
+	  
+	<div>
+	</div>
+	  
+	<!-- Welcome -->
+	<div class="templatemo-welcome" id="templatemo-welcome">
+		<div class="container">
+			<div class="templatemo-slogan text-center">
+				<span class="txt_darkgrey"></span><span class="txt_red">Switch</span>
+				<p class="txt_slogan"><i>An application that facilitate the use of transfer in a company</i></p>
+			<button class="btn btn-danger" onClick="location.href='{% url 'transfer' %}'">Transaction</button>
+			</div>
+		</div>
+	</div>
+	  
+	<!-- users -->
+	  <div class="container">
+		  <table class="table">
+		  	<thead>
+			  	<tr>
+					<th>ID</th>
+					<th>First Name</th>
+					<th>Last Name</th>
+					<th>Email</th>
+					<th>Username</th>
+					<th>Date Joined</th>
+					<th>Active</th>
+					<th>Administrator</th>
+					<th>Action</th>
+				</tr>
+			  </thead>
+			  <tbody>
+				  {% if users %}
+				  {% for person in users %}
+				  <tr>
+				  	<td>{{person.id}}</td>
+				  	<td>{{person.first_name}}</td>
+				  	<td>{{person.last_name}}</td>
+				  	<td>{{person.email}}</td>
+				  	<td>{{person.username}}</td>
+				  	<td>{{person.date_joined}}</td>
+					<td>{{person.is_active}}</td>
+					<td>{{person.is_superuser}}</td>
+					<td><a href="{% url 'usersProfile' person.id %}">edit</a></td>
+				  </tr>
+				  {% endfor %}
+				  {% else %}
+				  <p class="">No Users created</p>
+				  {% endif %}
+			  	
+			  </tbody>
+			  <tfoot>
+			  
+			  </tfoot>
+		  </table>
+	  </div>
+{% endblock %}

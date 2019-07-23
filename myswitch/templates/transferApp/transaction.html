@@ -1,0 +1,154 @@
+<!--transfer/dashboard/-->
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Transaction{% endblock %}
+{% block content %}
+	<!-- checking if user is set -->
+	{% if not user.first_name %}
+		<script>window.location.href = "{% url 'profile' %}";</script>
+	{% endif %}
+	<!-- navbar --> 
+	<div class="templatemo-top-menu">
+		<div class="container">
+			<!-- Static navbar -->
+			<nav class="navbar navbar-expand-lg navbar" role="navigation">
+				<div class="container">
+					<a href="{% url 'dashboard' %}" class="navbar-brand"><img src="{% static 'transferApp/images/official_switch.png' %}" alt="switch logo" title="switch" height="80" /></a>
+					<div class="collapse navbar-collapse nav justify-content-end" id="navbarNav">
+						<ul class="navbar-nav" style="margin-top: 40px;">
+						  <li class="nav-item">
+							<a class="nav-link" href="{% url 'dashboard' %}">Home <span class="sr-only">(current)</span></a>
+						  </li>
+						  <li class="nav-item active">
+							<a class="nav-link" href="{% url 'transfer' %}">Transaction</a>
+						  </li>
+						  <li class="nav-item">
+							<a class="nav-link" href="{% url 'support' %}">Support</a>
+						  </li>
+						  <li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="false">{{user.first_name}}</a>
+							  <div class="dropdown-menu">
+							  	<a class="dropdown-item" href="{% url 'profile' %}">Account</a>
+								{% if user.is_superuser %}
+								 <a class="dropdown-item" href="{% url 'signup' %}">Create User</a>
+								 <a class="dropdown-item" href="{% url 'userInfo' %}">View all Users</a>
+								 <a class="dropdown-item" href="{% url 'transactions' %}">View all Transactions</a>
+								 <a class="dropdown-item" href="{% url 'rateManagement' %}">Rates</a>
+								 {% endif %}
+							  	<a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+							  </div>
+						  </li>
+						</ul>
+					</div><!--/.nav-collapse -->
+				
+				</div>
+			</nav>
+		</div> <!-- /container -->
+	</div>
+	  
+	<!-- Welcome -->
+	<div class="templatemo-welcome" id="templatemo-welcome">
+		<div class="container">
+			<div class="templatemo-slogan text-center">
+				<span class="txt_darkgrey">Welcome to </span><span class="txt_red">Switch</span>
+				<p class="txt_slogan"><i>An application that facilitate the use of transfer in a company</i></p>
+			</div>
+		</div>
+	</div>
+	  
+	<!-- Transaction -->
+	  <div class="transaction container">
+		  <h5 class="text-center mt-4">Create a Transaction</h5>
+		  <form class="form-transaction" action="{% url 'transfer' %}" method="post" id="transactionSubmit">
+			  {% csrf_token %}
+		  	<div class="form-group">
+			  	<label for="" class="">Given Currency</label>
+				<select class="form-control form-control-sm" name="origingCurrency" id="origingCurrency">
+					<option value="{{dollar.currency_from}}">{{dollar.currency_from}}</option>
+					<option value="{{canada.currency_from}}">{{canada.currency_from}}</option>
+					<option value="{{euro.currency_from}}">{{euro.currency_from}}</option>
+					<option value="{{peso.currency_from}}">{{peso.currency_from}}</option>
+				</select>
+			  </div>
+		  	<div class="form-group">
+			  	<label for="" class="">Amount Received</label>
+				<input class="form-control form-control-sm" name="receiveAmount" id="receiveAmount" type="number" step="0.01" required>
+			  </div>
+		  	<div class="form-group">
+			  	<label for="" class="">Rate</label>
+				<input class="form-control form-control-sm" name="unitRate" id="unitRate" type="number" value="{{dollar.unitRate}}" readonly>
+			  </div>
+		  	<div class="form-group">
+			  	<label for="" class="">Converted to</label>
+				<input class="form-control form-control-sm" name="" id="" type="text" value="Gourdes" readonly>
+			  </div>
+		  	<div class="form-group">
+			  	<label for="" class="">Amount to Give</label>
+				<input class="form-control form-control-sm" name="giveAmount" id="giveAmount" type="number" readonly>
+			  </div>
+		  	<div class="form-group">
+			  	<label for="" class="">Comment</label>
+				<textarea class="form-control form-control-sm" name="commentTransfer" id="commentTransfer">Add comment</textarea>
+			  </div>
+			  <div class="form-group text-center">
+			  	<button type="submit" id="submitTransaction" class="btn btn-lg btn-outline-danger">Create Transaction</button>
+			  </div>
+		  </form>
+		  
+	  </div>
+{% endblock %}
+{% block script %}
+	<script>
+		$(document).ready(function(){
+			//select the right rate
+			$('#origingCurrency').on('change', function(){
+				var selectedValue = $('#origingCurrency').val();
+				if(selectedValue == "{{dollar.currency_from}}"){
+					$('#unitRate').val('{{dollar.unitRate}}');
+					calculateValue();
+				}
+				if(selectedValue == "{{canada.currency_from}}"){
+					$('#unitRate').val('{{canada.unitRate}}');
+					calculateValue();
+				}
+				if(selectedValue == "{{peso.currency_from}}"){
+					$('#unitRate').val('{{peso.unitRate}}');
+					calculateValue();
+				}
+				if(selectedValue == "{{euro.currency_from}}"){
+					$('#unitRate').val('{{euro.unitRate}}');
+					calculateValue();
+				}
+			});
+			//calculate the value
+			$('#receiveAmount').on('change', function(){
+				calculateValue();
+				
+			});
+			function calculateValue(){
+				var selectedValue = $('#receiveAmount').val();
+				if(selectedValue != null){
+					var totalAmount = selectedValue * $('#unitRate').val();
+					$('#giveAmount').val(totalAmount.toFixed(2));
+				}
+			}
+			//before form is submitted
+			$('#transactionSubmit').submit(function(){
+				if(!confirm('Submitting Transaction for a received amount of '+$('#receiveAmount').val()+' '+$('#origingCurrency').val()+' and a rate of '+$('#unitRate').val())){
+					return false;
+				}
+				else{
+					printTable();
+				}
+			});
+		});
+		//print transaction
+		function printTable(){
+			var printContents = document.getElementById("transactionTable").innerHTML;
+			var originalContents = document.body.innerHTML;
+			document.body.innerHTML = printContents;
+			window.print();
+			document.body.innerHTML = originalContents;
+		}
+	</script>
+{% endblock %}

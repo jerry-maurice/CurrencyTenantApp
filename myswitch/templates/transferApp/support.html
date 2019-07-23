@@ -1,0 +1,112 @@
+<!--transfer/dashboard/-->
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Support{% endblock %}
+{% block content %}
+	<!-- checking if user is set -->
+	{% if not user.first_name %}
+		<script>window.location.href = "{% url 'profile' %}";</script>
+	{% endif %}
+	<!-- navbar --> 
+	<div class="templatemo-top-menu">
+		<div class="container">
+			<!-- Static navbar -->
+			<nav class="navbar navbar-expand-lg navbar" role="navigation">
+				<div class="container">
+					<a href="{% url 'dashboard' %}" class="navbar-brand"><img src="{% static 'transferApp/images/official_switch.png' %}" alt="switch logo" title="switch" height="80" /></a>
+					<div class="collapse navbar-collapse nav justify-content-end" id="navbarNav">
+						<ul class="navbar-nav" style="margin-top: 40px;">
+						  <li class="nav-item">
+							<a class="nav-link" href="{% url 'dashboard' %}">Home <span class="sr-only">(current)</span></a>
+						  </li>
+						  <li class="nav-item">
+							<a class="nav-link" href="{% url 'transfer' %}">Transaction</a>
+						  </li>
+						  <li class="nav-item active">
+							<a class="nav-link" href="{% url 'support' %}">Support</a>
+						  </li>
+						  <li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="false">{{user.first_name}}</a>
+							  <div class="dropdown-menu">
+							  	<a class="dropdown-item" href="{% url 'profile' %}">Account</a>
+								{% if user.is_superuser %}
+								 <a class="dropdown-item" href="{% url 'signup' %}">Create User</a>
+								 <a class="dropdown-item" href="{% url 'userInfo' %}">View all Users</a>
+								 <a class="dropdown-item" href="{% url 'transactions' %}">View all Transactions</a>
+								 <a class="dropdown-item" href="{% url 'rateManagement' %}">Rates</a>
+								 {% endif %}
+							  	<a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+							  </div>
+						  </li>
+						</ul>
+					</div><!--/.nav-collapse -->
+				
+				</div>
+			</nav>
+		</div> <!-- /container -->
+	</div>
+	  
+	<!-- Welcome -->
+	<div class="templatemo-welcome" id="templatemo-welcome">
+		<div class="container">
+			<div class="templatemo-slogan text-center">
+				<span class="txt_darkgrey">Welcome to </span><span class="txt_red">Switch</span>
+				<p class="txt_slogan"><i>An application that facilitate the use of transfer in a company</i></p>
+			</div>
+		</div>
+	</div>
+	  
+	<!-- Transaction -->
+	  <div class="transaction container">
+		  <h5 class="text-center mt-4">Support</h5>
+		  <div class="container">
+		  	<div class="row">
+			  	<div class="col-md-4">
+					<div class="card bg-danger" style="width: 18rem;">
+					  <div class="card-header">
+						INDEX
+					  </div>
+					  <ul class="list-group list-group-flush">
+						<li class="list-group-item"><a href="#changePass">change password</a></li>
+						<li class="list-group-item"><a href="#completeUser">Complete Account</a></li>
+						<li class="list-group-item"><a href="#logout">Log out</a></li>
+						<li class="list-group-item"><a href="#transactionCreation">Create a Transaction</a></li>
+					  </ul>
+					</div>
+				</div>
+			  	<div class="col-md-8">
+					<div class="card text-white bg-danger mb-3" id="changePass">
+					  <div class="card-header">Change user password</div>
+					  <div class="card-body">
+						<p class="card-text">To change your password, on the profile page, click on the arrow next to your name and select account. At the bottom of the page, click on the "Change password" button and you will be directed to a new page. Enter the required information.</p>
+					  </div>
+					</div>
+					<div class="card text-white bg-danger mb-3" id="completeUser">
+					  <div class="card-header">Complete profile</div>
+					  <div class="card-body">
+						<p class="card-text">Once the user has been given a username and a password, he or she still needs to complete their profile. In order to complete the profile, the user need to go to the account page. He or she needs to complete the missing fields and click on Update User </p>
+					  </div>
+					</div>
+					<div class="card text-white bg-danger mb-3" id="logout">
+					  <div class="card-header">Log Out</div>
+					  <div class="card-body">
+						<p class="card-text">To log out the user needs to click on the arrow next to their first name and then click on log out.</p>
+					  </div>
+					</div>
+					<div class="card text-white bg-danger mb-3" id="transactionCreation">
+					  <div class="card-header">Create a transaction</div>
+					  <div class="card-body">
+						<p class="card-text">To create a transaction, go to the navigation bar and click on transaction and fill out the inputs. <em>the user also has the option to click on the transaction button on the homepage</em></p>
+					  </div>
+					</div>
+				</div>
+			  </div>
+		  </div>
+		  
+	  </div>
+{% endblock %}
+{% block script %}
+	<script>
+		
+	</script>
+{% endblock %}

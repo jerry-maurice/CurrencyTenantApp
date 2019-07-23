@@ -1,0 +1,26 @@
+[
+{
+    "model": "switch.client",
+    "pk": 1,
+    "fields": {
+        "domain_url": "localhost",
+        "schema_name": "public",
+        "name": "Schemas Inc.",
+        "paid_until": "2019-12-08",
+        "on_trial": true,
+        "created_on": "2019-07-17"
+    }
+},
+{
+    "model": "switch.client",
+    "pk": 2,
+    "fields": {
+        "domain_url": "tenant.localhost",
+        "schema_name": "tenant1",
+        "name": "Testing Tenant",
+        "paid_until": "2019-12-08",
+        "on_trial": true,
+        "created_on": "2019-07-17"
+    }
+}
+]
