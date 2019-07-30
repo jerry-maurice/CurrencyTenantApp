@@ -18,6 +18,6 @@ from django.urls import path, include
 from django.views.generic.base import TemplateView
 
 urlpatterns = [
-    path('', include('myswitch.urls')),
+    path('', include('switch.urls')),
     path('admin/', admin.site.urls),
 ]
