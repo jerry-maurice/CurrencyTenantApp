@@ -1,7 +1,7 @@
 <!--transfer/dashboard/-->
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Rate Management{% endblock %}
+{% block title %}Profile{% endblock %}
 {% block content %}
 	<!-- navbar --> 
 	<div class="templatemo-top-menu">
@@ -31,7 +31,7 @@
 								 <a class="dropdown-item" href="{% url 'transactions' %}">View all Transactions</a>
 								 <a class="dropdown-item" href="{% url 'rateManagement' %}">Rates</a>
 								 {% endif %}
-							  	<a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+							  	<a class="dropdown-item" href="{% url 'logout_view' %}">Logout</a>
 							  </div>
 						  </li>
 						</ul>
@@ -56,37 +56,18 @@
 		</div>
 	</div>
 	  
-	<!-- users -->
-	  <div class="container">
-		  <table class="table">
-		  	<thead>
-			  	<tr>
-					<th>ID</th>
-					<th>Unit</th>
-					<th>Convert From</th>
-					<th>Convert To</th>
-					<th>Action</th>
-				</tr>
-			  </thead>
-			  <tbody>
-				  {% if rates %}
-				  {% for rate in rates %}
-				  <tr>
-				  	<td>{{rate.id}}</td>
-				  	<td>{{rate.unitRate}}</td>
-				  	<td>{{rate.currency_from}}</td>
-				  	<td>{{rate.currency_to}}</td>
-					<td><a href="{% url 'rateManagementSingle' rate.id %}">edit</a></td>
-				  </tr>
-				  {% endfor %}
-				  {% else %}
-				  <p class="">No Users created</p>
-				  {% endif %}
-			  	
-			  </tbody>
-			  <tfoot>
-			  
-			  </tfoot>
-		  </table>
+	<!-- rate -->
+	  <div class="profile container">
+		  <form class="" action="{% url 'rateManagementSingle' rate.id %}" method="post">
+			  {% csrf_token %}
+			  <h5 class="text-center mt-4">Rate Change</h5>
+			  <div class="form-group text-center">
+				<label for="" class="col-sm-2 col-form-label">Add New Rate</label>
+				<input name="unitRate" type="number" step="0.01" class="form-control" style="width: 500px; margin-left: auto;margin-right: auto;">
+			  </div>
+			  <div class="form-group text-center">
+				  <button class="btn btn-info" type="submit">Add New Rate</button>
+			  </div>
+			</form>
 	  </div>
 {% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock%}
+
+{% block content %}
+<div class="login-form"  style="width:100rem;">
+    <h3 class="text-center">Rate configuration!</h3>
+	  <form method="post" action="">
+                  {% csrf_token %}
+		  <table class="table table-dark">
+			<thead>
+				<tr class="text-center">
+					<th>United States</th>
+					<th>Canada</th>
+					<th>Euro</th>
+					<th>Dominican Republic</th>
+				</tr>
+			  </thead>
+			  <tbody>
+				  <tr>
+					  <td>
+						<div class="card bg-danger">
+							<input required class="form-control" step="0.01" name="usRate" type="number">
+						</div>
+					  </td>
+					  <td>
+						<div class="card bg-info">
+							<input required class="form-control" step="0.01" name="caRate" type="number">
+						</div>
+					  </td>
+					  <td>
+						<div class="card bg-danger">
+							<input required class="form-control" step="0.01" name="euroRate" type="number">
+						</div>
+					  </td>
+					  <td>
+						<div class="card bg-info">
+							<input required class="form-control" step="0.01" name="pesoRate" type="number">
+						</div>
+					  </td>
+				  </tr>
+			  </tbody>
+			  <tfoot>
+				  <tr class="text-center">
+					  <td colspan="4">
+						<button type="submit" class="btn btn-outline-danger">Submit</button>
+					  </td>
+				  </tr>
+			  </tfoot>
+		  </table>
+		 </form></div>
+{% endblock %}

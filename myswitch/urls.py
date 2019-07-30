@@ -21,5 +21,6 @@ urlpatterns = [
     path('rates/', views.rateManagement, name='rateManagement'),
     # ex: /usersProfile
     path('<int:rate_id>/rate/', views.rateManagementSingle, name='rateManagementSingle'),
-
+    path('authenticateUser/', views.authenticateUser, name='authenticateUser'),
+    path('logout/', views.logout_view, name='logout_view'),
     ]

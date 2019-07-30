@@ -3,7 +3,7 @@
 {% block title %}Login{% endblock%}
 
 {% block content %}
-
+<!--
 <div class="card login-form" style="width: 18rem;">
   <div class="card-body">
     <h5 class="card-title">Login</h5>
@@ -13,5 +13,25 @@
 	<button class="btn btn-danger" type="submit">Login</button>
 </form>
   </div>
+</div>
+-->
+<div class="card login-form" style="width:18rem;">
+    <div class="card-body">
+        <h5 class="card-title">Login</h5>
+        <form method="post" action="{% url 'authenticateUser' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="">username</label>
+                <input class="form-control" type="text" name="username">
+            </div>
+            <div class="form-group">
+                <label for="">password</label>
+                <input class="form-control" type="password" name="password">
+            </div>
+            <div class="text-center form-group">
+                <button type="submit" class="btn btn-danger">Sign in</button>
+            </div>
+        </form>
+    </div>
 </div>
 {% endblock %}

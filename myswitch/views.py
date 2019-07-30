@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.conf import settings
 from django.shortcuts import redirect
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
@@ -19,7 +20,11 @@ logger = logging.getLogger(__name__)
 # dashboard
 @login_required
 def dashboard(request):
+    if not (Rate.objects.all()):
+        return initialization(request)
     #rateList = Rate.objects.all()
+    #if rateList is None:
+    #initialization()
     #output = ', '.join([q.rateItems for q in rateList])
     dollar_unit = get_object_or_404(Rate, currency_from="US Dollar")
     peso_unit = get_object_or_404(Rate, currency_from="Peso")
@@ -30,7 +35,26 @@ def dashboard(request):
     context = {'dollar':dollar_unit, 'peso':peso_unit,
                'euro':euro_unit, 'canada':canada_unit,
                'transaction':user_transfer}
-    return render(request,'transferApp/home.html', context)
+    return render(request,'myswitch/home.html', context)
+
+
+@login_required
+def initialization(request):
+    if request.method == 'POST':
+        Rate.objects.bulk_create([
+            # configuration of the US rate side
+            Rate(unitRate=request.POST['usRate'], currency_from="US Dollar", rate_description="US to Gourdes"),
+            # configuration of the CA rate side
+            Rate(unitRate=request.POST['caRate'], currency_from="Canada Dollar", rate_description="CA to Gourdes"),
+            # configuration of the EURO rate side
+            Rate(unitRate=request.POST['euroRate'], currency_from="Euro", rate_description="EURO to Gourdes"),
+            # configuration of the PESO rate side
+            Rate(unitRate=request.POST['pesoRate'], currency_from="Peso", rate_description="PESO to Gourdes")
+        ])
+        return redirect(dashboard)
+    if request.method == 'GET':
+        return render(request, 'myswitch/rate_configuration.html')
+
 
 # transfer
 @login_required
@@ -42,7 +66,7 @@ def transfer(request):
         canada_unit = get_object_or_404(Rate, currency_from="Canada Dollar")
         context = {'dollar':dollar_unit, 'peso':peso_unit,
                    'euro':euro_unit, 'canada':canada_unit}
-        return render(request, 'transferApp/transaction.html', context)
+        return render(request, 'myswitch/transaction.html', context)
     elif request.method == 'POST':
         origin = request.POST["origingCurrency"]
         originAmount = request.POST["receiveAmount"]
@@ -74,13 +98,13 @@ def profile(request):
         user.save()
         return redirect(profile)
     elif request.method == 'GET':
-        return render(request, 'transferApp/profile.html')
+        return render(request, 'myswitch/profile.html')
 
 
 # support
 @login_required
 def support(request):
-    return render(request, 'transferApp/support.html')
+    return render(request, 'myswitch/support.html')
 
 # view all transactions
 @login_required
@@ -89,7 +113,7 @@ def transactions(request):
         return "You are not allowed to be in this page"
     transact = Transaction.objects.all()
     context = {'transaction':transact}
-    return render(request, 'transferApp/transactions_all.html', context)
+    return render(request, 'myswitch/transactions_all.html', context)
 
 
 # view all users
@@ -99,7 +123,7 @@ def userInfo(request):
         return "You are not allowed to be in this page"
     users = User.objects.all()
     context = {'users':users}
-    return render(request, 'transferApp/users.html', context)
+    return render(request, 'myswitch/users.html', context)
 
 
 # edit user
@@ -110,7 +134,7 @@ def usersProfile(request, user_id):
     user_person = User.objects.get(pk=user_id)
     if request.method == 'GET':
         context = {'person':user_person}
-        return render(request, 'transferApp/user_profile.html', context)
+        return render(request, 'myswitch/user_profile.html', context)
     if request.method == 'POST':
         firstName = request.POST["firstName"]
         lastName = request.POST["lastName"]
@@ -142,7 +166,7 @@ def rateManagement(request):
         return "You are not allowed to be in this page"
     rate = Rate.objects.all()
     context = {'rates':rate}
-    return render(request, 'transferApp/rates.html', context)
+    return render(request, 'myswitch/rates.html', context)
 
 # change single rate
 @login_required
@@ -152,19 +176,39 @@ def rateManagementSingle(request, rate_id):
     rate = get_object_or_404(Rate, pk=rate_id)
     if request.method == 'GET':
         context = {'rate':rate}
-        return render(request, 'transferApp/rateModification.html', context)
+        return render(request, 'myswitch/rateModification.html', context)
     if request.method == 'POST':
         rate.unitRate = request.POST['unitRate']
         rate.save()
         return redirect(rateManagement)
 
 
-    
-        
+
+# first view
+@login_required        
 def index(request):
-    return HttpResponse("you are in the non tenant page")        
-        
-        
+    if not (Rate.objects.all()):
+        return initialization(request)
+    else:
+        return redirect(dashboard)        
 
 
+# check user credentials
+def authenticateUser(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect(dashboard)
+        else:
+            return HttpResponse("wrong login credentials")
+    if request.method == 'GET':
+        return render(request, 'registration/login.html')
 
+
+# log user out
+def logout_view(request):
+    logout(request)
+    return redirect(authenticateUser)

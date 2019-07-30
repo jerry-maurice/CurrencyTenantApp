@@ -1,8 +1,12 @@
 <!--transfer/dashboard/-->
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Profile{% endblock %}
+{% block title %}Transactions Summary{% endblock %}
 {% block content %}
+	<!-- checking if user is set -->
+	{% if not user.first_name %}
+		<script>window.location.href = "{% url 'profile' %}";</script>
+	{% endif %}
 	<!-- navbar --> 
 	<div class="templatemo-top-menu">
 		<div class="container">
@@ -12,7 +16,7 @@
 					<a href="{% url 'dashboard' %}" class="navbar-brand"><img src="{% static 'transferApp/images/official_switch.png' %}" alt="switch logo" title="switch" height="80" /></a>
 					<div class="collapse navbar-collapse nav justify-content-end" id="navbarNav">
 						<ul class="navbar-nav" style="margin-top: 40px;">
-						  <li class="nav-item ">
+						  <li class="nav-item">
 							<a class="nav-link" href="{% url 'dashboard' %}">Home <span class="sr-only">(current)</span></a>
 						  </li>
 						  <li class="nav-item">
@@ -31,7 +35,7 @@
 								 <a class="dropdown-item" href="{% url 'transactions' %}">View all Transactions</a>
 								 <a class="dropdown-item" href="{% url 'rateManagement' %}">Rates</a>
 								 {% endif %}
-							  	<a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+							  	<a class="dropdown-item" href="{% url 'logout_view' %}">Logout</a>
 							  </div>
 						  </li>
 						</ul>
@@ -42,59 +46,69 @@
 		</div> <!-- /container -->
 	</div>
 	  
-	<div>
-	</div>
-	  
 	<!-- Welcome -->
 	<div class="templatemo-welcome" id="templatemo-welcome">
 		<div class="container">
 			<div class="templatemo-slogan text-center">
-				<span class="txt_darkgrey"></span><span class="txt_red">Switch</span>
+				<span class="txt_darkgrey">Welcome to </span><span class="txt_red">Switch</span>
 				<p class="txt_slogan"><i>An application that facilitate the use of transfer in a company</i></p>
-			<button class="btn btn-danger" onClick="location.href='{% url 'transfer' %}'">Transaction</button>
 			</div>
 		</div>
 	</div>
 	  
 	<!-- Transaction -->
-	  <div class="profile container">
-		  <form class="" action="{% url 'profile' %}" method="post">
-			  {% csrf_token %}
-			  <h5 class="text-center mt-4">Profile</h5>
-			  <div class="form-group row">
-				<label for="" class="col-sm-2 col-form-label">First Name</label>
-				  <div class="col-sm-10">
-					<input name="firstName" type="text" class="form-control" value="{{user.first_name}}">
-				  </div>
+	  <div class="transaction container">
+		  <h5 class="text-center mt-4">Transaction</h5>
+		  <div class="container">
+			  <p class="text-center"><a href="#" onclick="printTable();return false;"><img src="{% static 'transferApp/images/printer.ico' %}" height="25" alt="printing"></a></p>
+			  <div class="card mb-3" id="printAll">
+			  <div class="card-header bg-info text-center">List of all transaction made</div>
+			  <div class="card-body">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>From</th>
+							<th>Original Amount</th>
+							<th>Transfered Amount</th>
+							<th>Date</th>
+							<th>User</th>
+							<th>Comment</th>
+						</tr>
+					</thead>
+					<tbody>
+					  {% if transaction %}
+					  {% for transact in transaction %}
+					  <tr>
+						<td>{{transact.id}}</td>
+						<td>{{transact.transfer_origin}}</td>
+						<td>{{transact.transfer_originAmount}}</td>
+						<td>{{transact.transfer_givenAmount}}</td>
+						<td>{{transact.transfer_Date}}</td>
+						<td>{{transact.transfer_by.get_full_name}}</td>
+						<td>{{transact.transfer_comment}}</td>
+					  </tr>
+					  {% endfor %}
+					  {% else %}
+					  <p class="">No transaction made</p>
+					  {% endif %}
+					</tbody>
+				  </table>
 			  </div>
-			  <div class="form-group row">
-				<label for="" class="col-sm-2 col-form-label">Last Name</label>
-				  <div class="col-sm-10">
-					<input name="lastName" type="text" class="form-control" value="{{user.last_name}}">
-				  </div>
-			  </div>
-			  <div class="form-group row">
-				<label for="" class="col-sm-2 col-form-label">Username</label>
-				  <div class="col-sm-10">
-					<input name="username" type="text" readonly class="form-control" value="{{user.username}}">
-				  </div>
-			  </div>
-			  <div class="form-group row">
-				<label for="" class="col-sm-2 col-form-label">Email</label>
-				  <div class="col-sm-10">
-					<input name="email" type="text" class="form-control" value="{{user.email}}">
-				  </div>
-			  </div>
-			  <div class="form-group row">
-				<label for="" class="col-sm-2 col-form-label">Date Joined</label>
-				  <div class="col-sm-10">
-					<input type="text" readonly class="form-control" value="{{user.date_joined}}">
-				  </div>
-			  </div>
-			  <div class="form-group text-center">
-				  <button class="btn btn-info" type="submit">Update User</button>
-				<button type="button" class="btn btn-danger" onClick="location.href='{% url 'password_change' %}'">Change Password</button>
-			  </div>
-			</form>
+			</div>
+		  </div>
+		  
 	  </div>
+{% endblock %}
+{% block script %}
+	<script>
+		//print transaction
+		function printTable(){
+			var printContents = document.getElementById("printAll").innerHTML;
+			var originalContents = document.body.innerHTML;
+			document.body.innerHTML = printContents;
+			window.print();
+			document.body.innerHTML = originalContents;
+		}
+	</script>
 {% endblock %}
